@@ -1,116 +1,211 @@
-<style>
-* {
-  box-sizing: border-box;
-}
-  html { scroll-behavior: smooth; }
-body {
-  margin: 0;
-  font-family: 'Segoe UI';
-}
-.nav {
-    width: 100%;
-    background-color: #1A237E;
-    display: flex;
-    align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
-}
-.nav > .nav-header {
-  flex: 0.95;
-  padding-left: 1rem;
-}
-.nav > .nav-header > .nav-title {
-  font-size: 22px;
-  color: #fff;
-}
-.nav > .nav-list {
-  display: flex;
-  gap: 2rem;
-}
-.nav > .nav-list > li {
-  list-style-type: none;
-}
-.nav > .nav-list > li a {
-  text-decoration: none;
-  color: #efefef;
-  cursor: pointer;
-}
-.nav > #nav-check {
-    display: none;
-}
-@media (max-width: 480px) {
-  .nav {
-    padding: 1rem;
-  }
-  .nav > .nav-btn {
-    display: inline-block;
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding-top: 0.2rem;
-  }
-  .nav > .nav-btn > label {
-    display: inline-block;
-    width: 50px;
-    height: 50px;
-    padding: 13px;
-  }
-  .nav > .nav-btn > label > span {
-    display: block;
-    width: 25px;
-    height: 10px;
-    border-top: 2px solid #eee;
-  }
-  .nav > .nav-list {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    width: 100%;
-    background-color: #1A237E;
-    height: 0;
-    transition: all 0.3s ease-in;
-    top: 40px;
-    left: 0;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>/* Color Theme is Sunset Over a Swamp from
+*  https://visme.co/blog/color-combinations/
+*/
+
+html, body {
+    margin: 0;
+    padding: 0;
     overflow: hidden;
   }
-  .nav > .nav-list > li {
-    width: 100%;
-    margin-top: 1.5rem;
-  }
-  .nav > #nav-check:checked ~ .nav-list {
-    height: calc(100vh - 50px);
-  }
-}
-#home, #about, #contact {
-    margin-top: 50px;
-    height: 1000px;
-}
-</style>
-
-<nav class="nav">
-  <input type="checkbox" id="nav-check">
-  <div class="nav-header">
-    <div class="nav-title">
-      Logo
-    </div>
-  </div>
-  <div class="nav-btn">
-    <label for="nav-check">
-      <span></span>
-      <span></span>
-      <span></span>
-    </label>
-  </div>
   
-  <ul class="nav-list">
-    <li><a href="#home">Home</a></li>
-    <li><a href="#about">About</a></li>
-    <li><a href="#contact">Contact</a></li>
-  </ul>
-</nav>
-<section id="home"><h1>Home section</h1></section>
-<section id="about"><h1>About section</h1></section>
-<section id="contact"><h1>Contact section</h1></section>
+  body::-webkit-scrollbar {
+    width: 0 !important;
+  }
+  
+  #sectionnumber {
+    width: 200px;
+    height: 50px;
+    line-height: 50px;
+    text-align: center;
+    position: fixed;
+    right: 30px;
+    top: 10px;
+    color: white;
+    background-color: black;
+    border-radius: 25px;
+    z-index: 1;
+  }
+  
+  .section {
+    width: 100vw;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    position: relative;
+    z-index: -1;
+  }
+  
+  .section h1 {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%);
+  }
+  
+  .section:nth-child(n) {
+    background-color: #6465A5;
+  }
+  
+  .section:nth-child(2n) {
+    background-color: #6975A6;
+  }
+  
+  .section:nth-child(3n) {
+    background-color: #F3E96B;
+  }
+  
+  .section:nth-child(4n) {
+    background-color: #F28A30;
+  }
+  
+  .section:nth-child(5n) {
+    background-color: #F05837;
+  }</style>
+</head>
+<body>
+    <p id="sectionnumber">Active Section: 0</p>
+<div class="section"><h1>section 1</h1></div>
+<div class="section"><h1>section 2</h1></div>
+<div class="section"><h1>section 3</h1></div>
+<div class="section"><h1>section 4</h1></div>
+<div class="section"><h1>section 5</h1></div>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.js"></script>
+<script>
+  const scrollElement =
+    window.document.scrollingElement ||
+    window.document.body ||
+    window.document.document;
 
+
+// Sections are zero indexed to match array from getElementsByClassName
+var scroll = {
+  activeSection: 0,
+  totalSections: document.getElementsByClassName('section').length,
+  throttled: false,
+  throttleDur: 500,
+}
+
+var downSection = () => {
+  if (scroll.activeSection < 4) {
+    ++scroll.activeSection
+    updateSectionNumber(scroll.activeSection)
+    scrollToSection(scroll.activeSection)
+  }
+}
+
+var upSection = () => {
+  if (scroll.activeSection > 0) {
+    --scroll.activeSection
+    updateSectionNumber(scroll.activeSection)
+    scrollToSection(scroll.activeSection)
+  }
+}
+
+var scrollToSection = (section) => {
+  anime({
+    targets: scrollElement,
+    scrollTop: (section) * window.innerHeight,
+    duration: scroll.throttleDur,
+    easing: 'linear'
+  })
+  
+  scroll.activeSection = section
+}
+
+var updateSectionNumber = (activeSection) => {
+  window.document.getElementById('sectionnumber').innerHTML = "Active Section: " + activeSection
+}
+
+window.addEventListener("keydown", function(e) {
+  if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+    e.preventDefault()
+  }
+  
+  if(!scroll.throttled) {
+    scroll.throttled = true
+    
+    setTimeout(function() {
+      scroll.throttled = false
+    }, 1.5 * scroll.throttleDur)
+    if ([32, 40].indexOf(e.keyCode) > -1) {
+      downSection()
+    }
+    if ([38].indexOf(e.keyCode) > -1) {
+      upSection()
+    }
+  }
+}, false)
+
+window.addEventListener('scroll', function(e) {
+  e.preventDefault()
+}, false)
+
+window.addEventListener('wheel', function(e) {
+  e.preventDefault()
+  
+  if (!scroll.throttled) {
+    scroll.throttled = true
+    
+    setTimeout(function() {
+      scroll.throttled = false
+    }, 1.5 * scroll.throttleDur)
+    
+    if(e.deltaY < 0) {
+      upSection()
+    } else {
+      downSection()
+    }
+  }
+}, false)
+
+var initialY = null
+
+window.addEventListener('touchstart', function(e) {
+  initialY = e.touches[0].clientY
+}, false)
+
+window.addEventListener('touchmove', function(e) {
+  e.preventDefault()
+  
+  if (initialY === null) {
+    return
+  }
+  
+  var currentY = e.touches[0].clientY;
+  
+  var diffY = initialY - currentY;
+  
+  if(!scroll.throttled) {
+    scroll.throttled = true
+    
+    setTimeout(function() {
+      scroll.throttled = false
+    }, 1.5 * scroll.throttleDur)
+    
+    if (diffY > 0) {
+      downSection()
+    } else {
+      upSection()
+    }
+  }
+  
+  initialy = null
+  
+}, {passive: false})
+
+
+// Scroll back to correct section when resized.
+window.addEventListener('resize', function(e) {
+  scrollToSection(scroll.activeSection)
+}, false)
+</script>
+</body>
+</html>
